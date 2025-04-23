@@ -7,13 +7,26 @@ const app = express();
 const autoPublish = require('./utils/autoPublisher');
 const initAdmin = require('./utils/initAdmin');
 
-// Middleware
+// ✅ Ruxsat berilgan domenlar
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://biolog-uz.vercel.app'
+];
+
+// ✅ CORS middleware
 app.use(
   cors({
-    origin: 'http://localhost:5173', // frontend URL
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true
   })
 );
+
 app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
